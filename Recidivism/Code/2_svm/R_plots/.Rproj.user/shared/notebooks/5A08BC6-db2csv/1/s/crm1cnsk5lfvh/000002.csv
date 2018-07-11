@@ -1,0 +1,8 @@
+"0","# Save each table csv in the format ""db_[table name].csv"""
+"0","for (i in 1:length(table_names)){"
+"0","  table = tbl(db,table_names[i])"
+"0","  "
+"0","  write_csv(as.tbl(as.data.frame(table)),"
+"0","            paste0(folder_out,""db_"",table_names[i],"".csv""))"
+"0","}"
+"2","Column `days_b_screening_arrest`: mixed type, first seen values of type integer, coercing other values of type string"

@@ -1,0 +1,5 @@
+"0","```r
+df8 %>%
+  filter(UB < 0) %>%
+  summarize(mean(is_recid))
+```"

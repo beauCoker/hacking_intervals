@@ -1,0 +1,6 @@
+"0","```r
+ypred_stump <- predict_stump(stump, X_test)
+mean((ypred_stump - Y_test)^2)
+```"
+"1","[1] 0.1
+"

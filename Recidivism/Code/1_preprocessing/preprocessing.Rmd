@@ -1,0 +1,80 @@
+---
+title: "Data processing"
+output: html_notebook
+---
+
+In this notebook, the data as provided by ProPublica is formatted for use in the SVM and sensitivity analysis examples. Binary features are coded.
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(readr)
+```
+
+```{r}
+folder_home <- "../../"
+folder_in <- paste0(folder_home,"Data/1_raw/")
+folder_out <- paste0(folder_home,"Data/2_preprocessed/")
+
+compas <- read_csv(paste0(folder_in,"compas-scores-two-years.csv"))
+nrow(compas)
+```
+
+```{r}
+# There are some redundant features that we can drop
+compas <- compas %>%
+  select(-compas_screening_date, -v_screening_date, 
+         -priors_count_1, -decile_score_1,
+         -violent_recid, 
+         -type_of_assessment, -v_type_of_assessment)
+```
+
+```{r}
+# Filtering that we attribute to data quality
+compas <- compas %>%
+  filter(!(is.na(c_days_from_compas))) %>%
+  filter(c_days_from_compas <= 30) %>%
+  filter(c_charge_degree %in% c("F","M"))
+```
+
+
+```{r}
+# Format features
+compas <- compas %>%
+  mutate(age_screening =  floor(as.numeric(as.period(interval(dob,screening_date)), "years"))) %>%
+  mutate(sex_Male = ifelse(sex=="Male",1,0)) %>%
+  mutate(c_charge_degree_F = if_else(c_charge_degree=="F",1,0)) %>%
+  mutate(age_18_20 = ifelse(age_screening>=18 & age_screening<=20,1,0)) %>%
+  mutate(age_21_22 = ifelse(age_screening>=21 & age_screening<=22,1,0)) %>%
+  mutate(age_23_25 = ifelse(age_screening>=23 & age_screening<=25,1,0)) %>%
+  mutate(age_26_45 = ifelse(age_screening>=26 & age_screening<=45,1,0)) %>%
+  mutate(age__45 = ifelse(age_screening>45,1,0)) %>%
+  mutate(juvenile_felonies__0 = ifelse(juv_fel_count>0,1,0)) %>%
+  mutate(juvenile_misdemeanors__0 = ifelse(juv_misd_count>0,1,0)) %>%
+  mutate(juvenile_crimes__0 = ifelse(juv_other_count>0 | juv_fel_count>0 | juv_misd_count>0,1,0)) %>%
+  mutate(priors_2_3 = ifelse(priors_count==2 | priors_count==3,1,0)) %>%
+  mutate(priors__0 = ifelse(priors_count==0,1,0)) %>%
+  mutate(priors__1 = ifelse(priors_count==1,1,0)) %>%
+  mutate(priors__3 = ifelse(priors_count>3,1,0))
+```
+
+
+Now apply Compas row filters as as in `Compas Analysis.ipynb`.
+
+```{r}
+# Filtered as in Compas Analysis.ipynb
+# compas <- compas %>% 
+#   filter(days_b_screening_arrest <= 30) %>%
+#   filter(days_b_screening_arrest >= -30) %>%
+#   filter(is_recid != -1) %>% # Doesn't remove any rows
+#   filter(c_charge_degree != "O") %>% # Doesn't remove any rows
+#   filter(score_text != 'N/A')
+```
+
+Save
+
+```{r}
+write_csv(compas, paste0(folder_out,"compas_matlab_bin.csv"))
+```
+

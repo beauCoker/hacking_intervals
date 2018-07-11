@@ -1,0 +1,4 @@
+"0","# Connect to the database"
+"0","db <- src_sqlite(paste0(folder_in,""compas.db""), create = TRUE)"
+"0","# List all the tables"
+"0","table_names <- src_tbls(db)"

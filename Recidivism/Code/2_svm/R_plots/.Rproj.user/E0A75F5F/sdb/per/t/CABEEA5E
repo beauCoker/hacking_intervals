@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1521400854263.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "CABEEA5E",
+    "lastKnownWriteTime" : 4396491697679619584,
+    "last_content_update" : 1521400854263,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "38EFDBA7",
+        "caption" : "filter(db_prisonhistory, person_id %in% id0)",
+        "contentUrl" : "grid_resource/gridviewer.html?env=_rs_no_env&obj=&cache_key=38EFDBA7",
+        "displayedObservations" : 0,
+        "environment" : "_rs_no_env",
+        "object" : "",
+        "preview" : 0,
+        "totalObservations" : 0,
+        "variables" : 9
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

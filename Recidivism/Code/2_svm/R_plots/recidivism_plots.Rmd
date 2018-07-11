@@ -1,0 +1,485 @@
+---
+title: "Plots and basic analysis of results"
+output: html_notebook
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(readr)
+library(dplyr)
+```
+
+
+```{r}
+folder_home <- "../../../"
+folder_in <- paste0(folder_home,"Results/svm/Tables/")
+folder_out <- paste0(folder_home,"Results/svm/Figures/")
+
+save_figs = FALSE #Whether or not to save the figures
+```
+
+```{r}
+### Load data
+propublica = read_csv(paste0(folder_home,"Data/1_raw/compas-scores-two-years.csv"))
+
+res_decile = read_csv(paste0(folder_in,'svm_output_bin_decile_score.csv'))
+res_decile3 = read_csv(paste0(folder_in,'svm_output_bin_decile_score3.csv'))
+res_decile8 = read_csv(paste0(folder_in,'svm_output_bin_decile_score8.csv'))
+res_race = read_csv(paste0(folder_in,'svm_output_bin_race.csv'))
+```
+
+
+```{r}
+# Some data processing for the plot
+ds = .09
+
+df_plt <- res_decile %>%
+  mutate(mid=(LB+UB)/2) %>%
+  arrange(decile_score, mid) %>%
+  group_by(decile_score) %>%
+  mutate(rank = 1:n()) %>%
+  mutate(score_jitter = decile_score + ds*1:n() - ds*(n()+1)/2) %>%
+  mutate(two_year_recid = as.factor(two_year_recid)) %>%
+  mutate(is_recid_plt =  ifelse(two_year_recid==1,"Reoffend",""))
+```
+
+
+
+```{r}
+id_ann <- c(4704, 2825, 4772, 8731, 9346, 10258, 3338, 7534, 6749, 4797, 40)
+ann_line <- filter(df_plt, id%in%id_ann) %>%
+  mutate(yend = UB+.5)
+ann_text <- left_join(ann_line,propublica,by="id") %>% ungroup()
+
+score_min = min(res_decile$decile_score)
+score_max = max(res_decile$decile_score)
+
+p <- ggplot(df_plt, aes(x=score_jitter)) +
+  #geom_segment(data=ann_line,aes(x = score_jitter, xend = score_jitter, y = 20, yend = 0,color=factor(id)), 
+  #             size=.5, arrow=arrow(length=unit(0.15,"cm")))+
+  geom_text(data=ann_text, aes(x=score_jitter, y=5.5, label=name),angle=90,hjust='left',size=2)+
+  geom_segment(data=ann_line,aes(x = score_jitter, xend = score_jitter, y = 5, yend = yend), 
+               color='black',size=.5, arrow=arrow(length=unit(0.15,"cm")))+
+  geom_errorbar(aes(ymin=LB, ymax=UB, color=race),
+                width=.05) + 
+  geom_point(aes(y=UB+.1, shape=is_recid_plt), size=.8) +
+  scale_shape_manual(values=c(32,16), name=element_blank()) + # values are for Reoffend character
+  geom_hline(yintercept=0, color='grey', linetype=2) +
+  theme_bw() +
+  scale_x_continuous(breaks=seq(score_min,score_max),
+                     limits=c(score_min-0.5, score_max+0.5),
+                     expand=c(0,0))+
+  theme(panel.grid.major.x = element_line(colour="white", size=0.5),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position="bottom") +
+  xlab("COMPAS Score") +
+  ylab("Scaled Distance to Hyperplane") +
+  scale_color_discrete(name="")
+p
+```
+
+```{r}
+if (save_figs){
+  ggsave(paste0(folder_out,"svm_by_decile.pdf"),p,width = 8, height = 4, units = "in")
+}
+```
+
+------------
+
+### COMPAS score of 3
+
+Fraction of people on either side of zero:
+```{r}
+sum(res_decile3$LB<0 & res_decile3$UB > 0 )/nrow(res_decile3)
+```
+
+How many people had an interval above zero (and a low compas score in this case)?
+```{r}
+res_decile3 %>%
+  filter(LB > 0)
+```
+What can we say about this group on average?
+```{r}
+above0_score3 = filter(propublica, id %in% res_decile3$id[res_decile3$LB>0]) %>%
+  summarize(n_people = n(), mean_prior=mean(priors_count), tot_recid=sum(two_year_recid))
+above0_score3
+```
+
+Of the `r nrow(res_decile3)` people in our dataset with COMPAS scores of 3, `r above0_score3$n_people` of them had hacking intervals entirely above zero. That is, had SVM been used for prediction, any reasonable model would have predicted that they would reoffend. These people had an average of nearly `r above0_score3$mean_prior` priors and`r above0_score3$tot_recid` of them reoffended. 
+
+#This includes 56 year old Dwight Francis (person id 10623) charged with felony petit theft. He had 20 priors including felony petit theft and felony possession of cocaine. Since his COMPAS score was calculated he has been arrested on three occasions for misdomeanor felony petit theft. Update: Dwight Francis no longer has interval above zero. Need to find other example.
+
+
+
+```{r}
+# Some data processing for the plot
+ds = .04
+
+df3_plt <- res_decile3 %>%
+  mutate(mid=(LB+UB)/2) %>%
+  arrange(decile_score, mid) %>%
+  group_by(decile_score) %>%
+  mutate(rank = 1:n()) %>%
+  mutate(score_jitter = decile_score + ds*1:n() - ds*(n()+1)/2) %>%
+  mutate(two_year_recid = as.factor(two_year_recid)) %>%
+  mutate(is_recid_plt =  ifelse(two_year_recid==1,"Reoffend","")) %>%
+  mutate(group = if_else(row_number()<=floor(nrow(res_decile3)/3),0,if_else(row_number()>floor(nrow(res_decile3)/3) & row_number()<=floor(nrow(res_decile3)*2/3),2,3)))
+```
+
+
+
+```{r}
+ann_line <- data.frame(x = 659, xend = 659, y = -2.5, yend = 0, group=3)
+ann_text <- data.frame(x = 650, xend = 659, y = -2.8, yend = 0, group=3)
+
+p<-ggplot(df3_plt, aes(x=rank)) +
+  geom_errorbar(aes(ymin=LB, ymax=UB, color=race),
+                width=.05) + 
+  geom_point(aes(y=UB+.1, shape=is_recid_plt), size=.8) +
+  scale_shape_manual(values=c(32,16), name=element_blank()) + # values are for Reoffend character
+  geom_hline(yintercept=0, color='grey', linetype=2) +
+  #geom_segment(data=ann_line,aes(x = x, xend = xend, y = y, yend = yend), 
+               #colour = "black", size=.5, arrow=arrow(length=unit(0.15,"cm")))+
+  #geom_text(data=ann_text,aes(x=x,y=y,size=2),label="Dwight Francis",size=3)+
+  facet_wrap(~group ,scales = "free",ncol=1) +
+  theme_bw() +
+  scale_x_continuous(expand=c(0.01,0.01)
+                     #                  breaks=seq(score_min,score_max),
+                     #                   limits=c(score_min-0.5, score_max+0.5),
+  )+
+  theme(strip.background = element_blank(),
+        strip.text = element_blank(),
+        #axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position="bottom") +
+  ylab("Scaled Distance to Hyperplane") +
+  xlab("Rank of hacking interval midpoint") +
+  scale_color_discrete(name="")
+
+p
+```
+
+
+```{r}
+if (save_figs){
+ggsave(paste0(folder_out,"svm_by_decile3.pdf"),p,width = 8, height = 4, units = "in")
+}
+```
+
+------------
+## COMPAS score of 8
+
+Number of people on either side of zero:
+```{r}
+sum(res_decile8$LB<0 & res_decile8$UB > 0 )/nrow(res_decile8)
+```
+
+How many people had an interval below zero (and a high compas score in this case)?
+```{r}
+res_decile8 %>%
+  filter(UB < 0)
+```
+
+What can we say about this group on average?
+
+```{r}
+above0_score8 = filter(propublica, id %in% res_decile8$id[res_decile8$LB>0]) %>%
+  summarize(n_people = n(), mean_prior=mean(priors_count), tot_recid=sum(two_year_recid))
+above0_score8
+```
+
+
+Of the `r nrow(res_decile8)` people in our dataset with COMPAS scores of 8, `r above0_score8$n_people` of them had hacking intervals entirely below zero. That is, had SVM been used for prediction, any reasonable model would have predicted that they would not reoffend. The people had an average of `r above0_score8$mean_prior` priors and `r above0_score8$tot_recid` reoffend.
+
+#[I think all of the compas scores were good in this case. Most have pretty serious charges (like battery). The one who didn't reoffend has a serious criminal history so I think the score was ok]
+
+
+Fraction that reoffend:
+```{r}
+res_decile8 %>%
+  summarize(mean(two_year_recid))
+```
+
+Fraction that reoffend with an upper bound below 0
+```{r}
+res_decile8 %>%
+  filter(UB < 0) %>%
+  summarize(mean(two_year_recid))
+```
+
+Fraction that reoffend with a lower bound above 0
+```{r}
+res_decile8 %>%
+  filter(LB > 0) %>%
+  summarize(mean(two_year_recid))
+```
+
+```{r}
+# Some data processing for the plot
+ds = .04
+
+df8_plt <- res_decile8 %>%
+  mutate(mid=(LB+UB)/2) %>%
+  arrange(decile_score, mid) %>%
+  group_by(decile_score) %>%
+  mutate(rank = 1:n()) %>%
+  mutate(score_jitter = decile_score + ds*1:n() - ds*(n()+1)/2) %>%
+  mutate(two_year_recid = as.factor(two_year_recid)) %>%
+  mutate(is_recid_plt =  ifelse(two_year_recid==1,"Reoffend","")) %>%
+  mutate(group = if_else(row_number()<=floor(nrow(res_decile8)/2),0,1))
+```
+
+
+
+
+
+
+```{r}
+ann_line <- data.frame(x = 50, xend = 50, y = -4, yend = -2, group=0)
+ann_text <- data.frame(x = 50, xend = 50, y = -4.2, yend = -2, group=0)
+
+
+
+p <- ggplot(df8_plt, aes(x=rank)) +
+  geom_errorbar(aes(ymin=LB, ymax=UB, color=race),
+                width=.05) + 
+  geom_point(aes(y=UB+.1, shape=is_recid_plt), size=.8) +
+  scale_shape_manual(values=c(32,16), name=element_blank()) + # values are for Reoffend character
+  geom_hline(yintercept=0, color='grey', linetype=2) +
+  #geom_segment(data=ann_line,aes(x = x, xend = xend, y = y, yend = yend), 
+  #             colour = "black", size=.5, arrow=arrow(length=unit(0.15,"cm")))+
+  #geom_text(data=ann_text,aes(x=x,y=y,size=3),label="label")+
+  facet_wrap(~group ,scales = "free",nrow=2) +
+  theme_bw() +
+  scale_x_continuous(expand=c(0.01,0.01)
+                     #                  breaks=seq(score_min,score_max),
+                     #                   limits=c(score_min-0.5, score_max+0.5),
+  )+
+  theme(strip.background = element_blank(),
+        strip.text = element_blank(),
+        #axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position="bottom") +
+  ylab("Scaled Distance to Hyperplane") +
+  xlab("Rank of hacking interval midpoint") +
+  scale_color_discrete(name="")
+
+p
+```
+
+
+```{r}
+if (save_figs){
+ggsave(paste0(folder_out,"svm_by_decile8.pdf"),p,width = 8, height = 4, units = "in")
+}
+```
+
+
+```{r}
+
+ggplot(df8_plt, aes(x=score_jitter)) +
+  geom_errorbar(aes(ymin=LB, ymax=UB, color=race),
+                width=.05) + 
+  geom_point(aes(y=UB+.1, shape=is_recid_plt), size=.8) +
+  scale_shape_manual(values=c(32,16), name=element_blank()) + # values are for Reoffend character
+  geom_hline(yintercept=0, color='grey', linetype=2) +
+  theme_bw() +
+  scale_x_continuous(expand=c(0,0)
+   #                  breaks=seq(score_min,score_max),
+  #                   limits=c(score_min-0.5, score_max+0.5),
+  )+
+  theme(strip.background = element_blank(),
+        strip.text = element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position="bottom") +
+  ylab("Scaled Distance to Hyperplane") +
+  scale_color_discrete(name="")
+```
+
+
+------------
+
+
+```{r}
+# Some data processing for the plot
+ds = .04
+
+dfr_plt <- res_race %>%
+  mutate(mid=(LB+UB)/2) %>%
+  mutate(race_num = as.numeric(as.factor(race))) %>%
+  arrange(race_num, mid) %>%
+  group_by(race_num) %>%
+  mutate(rank = 1:n()) %>%
+  mutate(x_jitter = race_num + ds*1:n() - ds*(n()+1)/2) %>%
+  mutate(two_year_recid = as.factor(two_year_recid)) %>%
+  mutate(is_recid_plt =  ifelse(two_year_recid==1,"Reoffend",""))
+```
+
+
+
+```{r}
+x_min = min(dfr_plt$race_num)
+x_max = max(dfr_plt$race_num)
+
+#c(4280,730,5749)
+id_ann <- c(4704, 2825, 4772, 8731, 9346, 10258, 3338, 4280,730,5749)
+
+#id_ann <- c(4704, 2825, 4772, 8731, 9346, 10258, 3338, 7534, 6749)
+#id_ann <- c(4704, 2825, 4772, 8731, 9346, 10258, 3338, 2523, 4280, 3114)
+ann_line <- filter(dfr_plt, id%in%id_ann) %>%
+  mutate(yend = UB+.5)
+ann_text <- left_join(ann_line,propublica,by="id") %>% ungroup()
+
+p <- ggplot(dfr_plt, aes(x=x_jitter)) +
+  #geom_segment(data=ann_line,aes(x = x_jitter, xend = x_jitter, y = 10, yend = 0,color=factor(id)), 
+  #             size=.5, arrow=arrow(length=unit(0.15,"cm")))+
+  geom_text(data=ann_text, aes(x=x_jitter, y=6.5, label=name),angle=90,hjust='left',size=2)+
+  geom_segment(data=ann_line,aes(x = x_jitter, xend = x_jitter, y = 6, yend = yend), 
+               color='black',size=.5, arrow=arrow(length=unit(0.15,"cm")))+
+  geom_errorbar(aes(ymin=LB, ymax=UB, color=score_text),
+                width=.05) + 
+  geom_point(aes(y=UB+.1, shape=is_recid_plt), size=.8) +
+  scale_shape_manual(values=c(32,16), name=element_blank()) + # values are for Reoffend character
+  geom_hline(yintercept=0, color='grey', linetype=2) +
+  theme_bw() +
+  scale_x_continuous(breaks=seq(x_min,x_max),
+                     limits=c(x_min-0.5, x_max+0.5),
+                     expand=c(0,0),
+                     labels=unique(dfr_plt$race))+
+  theme(panel.grid.major.x = element_line(colour="white", size=0.5),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position="bottom") +
+  xlab("Race") +
+  ylab("Scaled Distance to Hyperplane") +
+  scale_color_discrete(name="")
+  scale_color_discrete(name = "COMPAS score")
+
+p
+```
+
+```{r}
+if (save_figs){
+ggsave(paste0(folder_out,"svm_by_race.pdf"),p,width = 8, height = 4, units = "in")
+}
+```
+
+
+
+##### For decile chart
+40
+Victor Moreno, a 31 year old African American male, received a COMPAS score of 10 despite zero priors. However, the arrest related to his COMPAS score calculation included felony charges of battery, tampering with a victim, tampering with physical evidence, and delivering cocaine. Our SVM model, without access to the content of these charges, not surprisingly gave him a low hacking interval given his lack of prior offenses.
+```{r}
+res_decile %>%
+  filter(id==40)
+```
+
+
+7534
+daniel chiswell, a 41-year old caucasian male, was assigned a COMPAS score of 1 after being charged with felony posession of heroin. He had previously been charged with felony battery on an officer. His hacking interval overlapped with zero . He was charged again with felony posession of heroin later that year.
+```{r}
+res_decile %>%
+  filter(id==7534)
+```
+
+6749
+valentina parrish, a 21 year old caucasian female, was charged with driving under the influence and possesion of less than 20 grams of cannabis. She was given a COMPAS score of 10. Hacking interval was , so on either side of zero.
+```{r}
+res_decile %>%
+  filter(id==6749)
+```
+
+
+8731
+Gregory Lugo. Low score, low hacking interval. No priors. However, propublica says he has 3 DUIs. (There are 3 charges in the charge database that are some kind of DUI and have a different case number from his c_case_number, but the date is the same as the c_charge_date (and confirmed with clerk website)... so are those really priors?)
+```{r}
+res_decile %>%
+  filter(id==8731)
+```
+
+
+4797
+claudio tamarez
+Possession Of Phentermine
+Caucasian 
+30 years old
+hacking above zero, COMPAS socre of 4 (low risk)
+9 priors, including battery on an officer 
+```{r}
+res_decile %>%
+  filter(id==4797)
+```
+
+
+
+
+
+
+##### For race chart
+
+4280
+edwin chaj. a 27 year old Hispanic male, received a COMPAS score of 9 after he was charged with disorderly intoxication. He had only one prior related to trespassing. Hacking interval not entirely below zero, but it was close. He did not recidivate.
+```{r}
+res_race %>%
+  filter(id==4280)
+```
+
+
+730
+cuong do, 32 year odl Asian male, no priors, compas score 8, hacking interval below zero. Did no recidivate. Charged with felony burglary and misdomeanor petit theft.
+```{r}
+res_race %>%
+  filter(id==730)
+```
+
+
+5749
+mories abdo, a 27 year old Asian male has 6 priors, compas score 3, hacking above zero. Did not recidivate. Charged with battery. Can't find severe very severe priors, though.
+
+```{r}
+res_race %>%
+  filter(id==5749)
+```
+
+#### Information from databases
+
+Useful for manually looking up people.
+
+```{r, message=FALSE}
+folder_in_db <- paste0(folder_home,"Data/2_from_db/")
+
+db_casearrest <- read_csv(paste0(folder_in_db,"db_casearrest.csv"))
+db_charge <- read_csv(paste0(folder_in_db,"db_charge.csv"))
+db_jailhistory <- read_csv(paste0(folder_in_db,"db_jailhistory.csv"))
+db_prisonhistory <- read_csv(paste0(folder_in_db,"db_prisonhistory.csv"))
+```
+
+
+```{r}
+#id0 <- c(4280,730,5749)
+id0 <- c(5749)
+
+View(filter(db_casearrest, person_id %in% id0))
+View(filter(db_charge, person_id %in% id0))
+View(filter(db_jailhistory, person_id %in% id0))
+View(filter(db_prisonhistory, person_id %in% id0))
+View(filter(propublica, id %in% id0))
+```
+

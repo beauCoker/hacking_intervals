@@ -1,0 +1,5 @@
+"0","folder_in_db <- paste0(folder_home,""Data/2_from_db/"")"
+"0","db_casearrest <- read_csv(paste0(folder_in_db,""db_casearrest.csv""))"
+"0","db_charge <- read_csv(paste0(folder_in_db,""db_charge.csv""))"
+"0","db_jailhistory <- read_csv(paste0(folder_in_db,""db_jailhistory.csv""))"
+"0","db_prisonhistory <- read_csv(paste0(folder_in_db,""db_prisonhistory.csv""))"

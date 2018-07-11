@@ -1,0 +1,4 @@
+"0","```r
+filter(csv, id %in% df8$id[df8$UB<0]) %>%
+  summarize(mean(priors_count), sum(is_recid))
+```"

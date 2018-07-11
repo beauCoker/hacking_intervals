@@ -1,0 +1,34 @@
+"0","```r
+### Read data
+Z <- as.matrix(read_csv(\"train.csv\"))
+```"
+"1","Parsed with column specification:
+cols(
+  X1 = col_integer(),
+  X2 = col_integer(),
+  X3 = col_integer(),
+  X4 = col_integer(),
+  X5 = col_integer(),
+  Y = col_integer()
+)
+"
+"0","```r
+Z_test <- as.matrix(read_csv(\"test.csv\"))
+```"
+"1","Parsed with column specification:
+cols(
+  X1 = col_integer(),
+  X2 = col_integer(),
+  X3 = col_integer(),
+  X4 = col_integer(),
+  X5 = col_integer(),
+  Y = col_integer()
+)
+"
+"0","```r
+X <- Z[,(1:ncol(Z)-1)]
+Y <- Z[,ncol(Z)]
+X_test <- Z_test[,(1:ncol(Z)-1)]
+Y_test <- Z_test[,ncol(Z)]
+n <- nrow(X)
+```"

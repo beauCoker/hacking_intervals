@@ -1,0 +1,12 @@
+"0","```r
+# Some data processing for the plot
+ds = .09
+df_plt <- df %>%
+  mutate(mid=(LB+UB)/2) %>%
+  arrange(decile_score, mid) %>%
+  group_by(decile_score) %>%
+  mutate(rank = 1:n()) %>%
+  mutate(score_jitter = decile_score + ds*1:n() - ds*(n()+1)/2) %>%
+  mutate(is_recid = as.factor(is_recid)) %>%
+  mutate(is_recid_plt =  ifelse(is_recid==1,\"Reoffend\",\"\"))
+```"

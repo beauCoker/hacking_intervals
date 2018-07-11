@@ -1,0 +1,8 @@
+"0","```r
+# There are some redundant features that we can drop
+compas <- compas %>%
+  select(-compas_screening_date, -v_screening_date, 
+         -priors_count_1, -decile_score_1,
+         -violent_recid, 
+         -type_of_assessment, -v_type_of_assessment)
+```"

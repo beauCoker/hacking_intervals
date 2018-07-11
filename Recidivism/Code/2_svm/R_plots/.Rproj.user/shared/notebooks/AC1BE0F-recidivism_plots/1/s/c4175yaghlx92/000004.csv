@@ -1,0 +1,2 @@
+"0","res_decile8 %>%"
+"0","  summarize(mean(two_year_recid))"

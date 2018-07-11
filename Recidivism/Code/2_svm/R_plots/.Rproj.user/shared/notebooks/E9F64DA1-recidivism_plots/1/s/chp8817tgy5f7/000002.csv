@@ -1,0 +1,4 @@
+"0","```r
+filter(csv, id %in% df3$id[df3$LB>0]) %>%
+  summarize(mean(priors_count), sum(is_recid))
+```"

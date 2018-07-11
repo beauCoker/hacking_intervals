@@ -1,0 +1,13 @@
+"0","```r
+# Some data processing for the plot
+ds = .04
+df3_plt <- df3 %>%
+  mutate(mid=(LB+UB)/2) %>%
+  arrange(decile_score, mid) %>%
+  group_by(decile_score) %>%
+  mutate(rank = 1:n()) %>%
+  mutate(score_jitter = decile_score + ds*1:n() - ds*(n()+1)/2) %>%
+  mutate(is_recid = as.factor(is_recid)) %>%
+  mutate(is_recid_plt =  ifelse(is_recid==1,\"Reoffend\",\"\")) %>%
+  mutate(group = if_else(row_number()<=floor(nrow(df3)/3),0,if_else(row_number()>floor(nrow(df3)/3) & row_number()<=floor(nrow(df3)*2/3),2,3)))
+```"

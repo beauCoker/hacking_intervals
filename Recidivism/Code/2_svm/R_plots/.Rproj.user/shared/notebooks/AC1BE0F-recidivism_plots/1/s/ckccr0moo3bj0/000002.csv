@@ -1,0 +1,4 @@
+"0","folder_home <- ""../../../"""
+"0","folder_in <- paste0(folder_home,""Results/svm/Tables/"")"
+"0","folder_out <- paste0(folder_home,""Results/svm/Figures/"")"
+"0","save_figs = FALSE #Whether or not to save the figures"

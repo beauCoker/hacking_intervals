@@ -1,0 +1,13 @@
+"0","```r
+# Some data processing for the plot
+ds = .04
+dfr_plt <- dfr %>%
+  mutate(mid=(LB+UB)/2) %>%
+  mutate(race_num = as.numeric(as.factor(race))) %>%
+  arrange(race_num, mid) %>%
+  group_by(race_num) %>%
+  mutate(rank = 1:n()) %>%
+  mutate(x_jitter = race_num + ds*1:n() - ds*(n()+1)/2) %>%
+  #mutate(is_recid = as.factor(is_recid)) %>%
+  mutate(is_recid_plt =  ifelse(is_recid==1,\"Reoffend\",\"\"))
+```"

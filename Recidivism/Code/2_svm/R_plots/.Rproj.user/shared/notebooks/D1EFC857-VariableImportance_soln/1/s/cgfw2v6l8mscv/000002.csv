@@ -1,0 +1,157 @@
+"0","```r
+### Supporting functions
+gini <- function(p) {2 * p *(1-p)}
+gini_reduction <- function(X,Y){
+  ## Computes the reduction in the gini index
+  
+  # Node before splitting
+  N = length(Y)
+  p = sum(Y==1)/N
+  
+  # Record indices which split
+  id_1 = X == 1
+  id_0 = X == 0
+  
+  # Number in each split
+  N1 = sum(id_1)
+  N0 = sum(id_0)
+  
+  # Fraction of positives in each branch
+  p1 = sum(Y[id_1]==1)/N1
+  p0 = sum(Y[id_0]==1)/N0
+  
+  # Return the Gini Reduction
+  gini(p) - N0/N*gini(p0) - N1/N*gini(p1)
+}
+pred_measure <- function(x,xs){
+  pL = sum(x==0)
+  pR = sum(x==1)
+  
+  pLL <- sum(x==0 & xs==0)
+  pRR <- sum(x==1 & xs==1)
+  
+  return((min(pL,pR) - (1 - pLL - pRR))/ min(pL,pR))
+}
+most_common <- function(x){
+  ## Returns most common element in vector
+  as.numeric(names(sort(table(x),decreasing=TRUE))[1])
+}
+### Decision stumps
+grow_stump <- function(X, Y){
+  ## Grows a decision stump
+  
+  stump <- list(split=NA,gini=NA,leaf=c(NA,NA),
+                split_sur=NA,gini_sur=NA,leaf_sur=c(NA,NA))
+  p <- ncol(X)
+  
+  # Find split
+  gini_all <- apply(X,2,function(x) gini_reduction(x,Y))
+  stump$split <- which.max(gini_all)
+  stump$gini <- max(gini_all)
+  
+  # Leaves
+  id0 <- X[,stump$split]==0
+  stump$leaf[1] <- most_common(Y[id0])
+  stump$leaf[2] <- most_common(Y[!id0])
+  
+  # Best surrogate split
+  if (ncol(X)>1){
+    col_notsplit <- setdiff(1:p, stump$split)
+    pred_measure_all <- apply(X[,col_notsplit,drop=FALSE],2,function(xs) pred_measure(X[,stump$split],xs))
+    stump$split_sur <- col_notsplit[which.max(pred_measure_all)]
+    stump$gini_sur <- gini_reduction(X[,stump$split_sur],Y)
+    
+    # Leaves for surrogate
+    id0_sur <- X[,stump$split_sur]==0
+    stump$leaf_sur[1] <- most_common(Y[id0_sur])
+    stump$leaf_sur[2] <- most_common(Y[!id0_sur])
+  }
+  
+  return(stump)
+}
+predict_stump <- function(stump, X, sur=FALSE){
+  ## Returns predictions of a decision stump (sur=FALSE)
+  ## or the predictions of a surrogate decision stump (sur=TRUE)
+  
+  pred <- rep(NA,nrow(X))
+  
+  if (!sur) {
+    id0 <- X[,stump$split]==0
+    pred[id0] <- stump$leaf[1]
+    pred[!id0] <- stump$leaf[2]
+  }
+  else {
+    id0 <- X[,stump$split_sur]==0
+    pred[id0] <- stump$leaf_sur[1]
+    pred[!id0] <- stump$leaf_sur[2]
+  }
+  
+  return(pred)
+}
+### Random forests
+grow_forest <- function(X, Y, B, K, M){
+  ## Grows a random forest of decision stumps
+  
+  # B -- number of observations in each bootstrap sample
+  # K -- number of features in each bootstrap sample
+  # M -- number of trees
+  n <- nrow(X)
+  p <- ncol(X)
+  
+  # Allocate
+  forest <- list()
+  imp <- data.frame(matrix(NA,nrow=M,ncol=p,dimnames=list(NULL,colnames(X))))
+  imp_OOB <- data.frame(matrix(NA,nrow=M,ncol=p,dimnames=list(NULL,colnames(X))))
+  
+  for (i in 1:M){
+    
+    # Draw a bootstrapped sample
+    samp_rows <- sample(1:n, B, replace=TRUE)
+    samp_rows_OOB <- setdiff(1:n,unique(samp_rows))
+    
+    # Draw a sample of features
+    samp_cols <- sample(1:p, K, replace=FALSE)
+    
+    # Bag and out of bag
+    X_B <- X[samp_rows,samp_cols,drop=FALSE]
+    Y_B <- Y[samp_rows]
+    
+    X_OOB <- X[samp_rows_OOB,]
+    Y_OOB <- Y[samp_rows_OOB]
+    
+    # Grow a tree stump
+    stump <- grow_stump(X_B, Y_B)
+    stump$split <- samp_cols[stump$split]
+    stump$split_sur <- samp_cols[stump$split_sur]
+    forest[[i]] <- stump
+    
+    # Record impurity variable importance
+    imp[i,stump$split] <- stump$gini
+    
+    # Compute OOB prediction importance
+    Ypred_OOB <- predict_stump(stump, X_OOB)
+    error <- mean((Ypred_OOB - Y_OOB)^2)
+    
+    reorder <- sample(1:nrow(X_OOB),nrow(X_OOB),replace=FALSE)
+    X_OOB_reorder <- X_OOB
+    X_OOB_reorder[,stump$split] <- X_OOB[reorder,stump$split]
+    
+    Ypred_OOB_reorder <- predict_stump(stump, X_OOB_reorder)
+    
+    imp_OOB[i,stump$split] <- mean((Ypred_OOB_reorder - Y_OOB)^2) - error
+    
+  }
+  
+  return(list(forest=forest, imp=imp, imp_OOB=imp_OOB))
+}
+predict_forest <- function(forest, X, sur=FALSE){
+  ## Returns predictions of a random foreest of decision stumps (sur=FALSE)
+  ## or the predictions of a random forest of surrogate decision stumps (sur=TRUE)
+  
+  # Predict on each tree in the forest
+  pred_all <- bind_cols(lapply(forest$forest, function(stump) as.data.frame(predict_stump(stump, X, sur))))
+  
+  # Return the majority vote
+  apply(pred_all,1, most_common)
+}
+```"

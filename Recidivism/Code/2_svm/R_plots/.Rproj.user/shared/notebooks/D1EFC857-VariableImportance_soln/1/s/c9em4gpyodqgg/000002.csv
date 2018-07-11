@@ -1,0 +1,8 @@
+"0","```r
+### Method 2: Average the error of the trees
+error_trees <- rep(NA,length(K))
+for (i in K){
+pred_tree <- lapply(forest[[i]]$forest, function(stump) predict_stump(stump, X_test))
+error_trees[i] <- mean(sapply(pred_tree, function(ypred) mean((ypred - Y_test)^2)))
+}
+```"

@@ -1,0 +1,6 @@
+"0","# Filtering that we attribute to data quality"
+"0","compas <- compas %>%"
+"0","  filter(!(is.na(c_days_from_compas))) %>%"
+"0","  filter(c_days_from_compas <= 30) %>%"
+"0","  filter(c_charge_degree %in% c(""F"",""M""))"
+"2","package ‘bindrcpp’ was built under R version 3.3.2"

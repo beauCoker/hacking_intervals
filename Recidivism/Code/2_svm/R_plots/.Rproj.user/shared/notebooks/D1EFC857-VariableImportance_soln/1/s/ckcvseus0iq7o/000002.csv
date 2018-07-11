@@ -1,0 +1,11 @@
+"0","```r
+# split counts
+out <- matrix(NA,length(K),5)
+colnames(out) <- colnames(X)
+rownames(out) <- K
+for (i in K){
+  counts <- table(sapply(forest[[i]]$forest, function(x) x$split))
+  out[i,as.numeric(names(counts))] <- counts
+}
+kable(round(out,3),caption=\"Split counts\")
+```"

@@ -1,0 +1,79 @@
+"0","x_min = min(dfr_plt$race_num)"
+"0","x_max = max(dfr_plt$race_num)"
+"0","#c(4280,730,5749)"
+"0","id_ann <- c(4704, 2825, 4772, 8731, 9346, 10258, 3338, 4280,730,5749)"
+"0","#id_ann <- c(4704, 2825, 4772, 8731, 9346, 10258, 3338, 7534, 6749)"
+"0","#id_ann <- c(4704, 2825, 4772, 8731, 9346, 10258, 3338, 2523, 4280, 3114)"
+"0","ann_line <- filter(dfr_plt, id%in%id_ann) %>%"
+"0","  mutate(yend = UB+.5)"
+"0","ann_text <- left_join(ann_line,propublica,by=""id"") %>% ungroup()"
+"0","p <- ggplot(dfr_plt, aes(x=x_jitter)) +"
+"0","  #geom_segment(data=ann_line,aes(x = x_jitter, xend = x_jitter, y = 10, yend = 0,color=factor(id)), "
+"0","  #             size=.5, arrow=arrow(length=unit(0.15,""cm"")))+"
+"0","  geom_text(data=ann_text, aes(x=x_jitter, y=6.5, label=name),angle=90,hjust='left',size=2)+"
+"0","  geom_segment(data=ann_line,aes(x = x_jitter, xend = x_jitter, y = 6, yend = yend), "
+"0","               color='black',size=.5, arrow=arrow(length=unit(0.15,""cm"")))+"
+"0","  geom_errorbar(aes(ymin=LB, ymax=UB, color=score_text),"
+"0","                width=.05) + "
+"0","  geom_point(aes(y=UB+.1, shape=is_recid_plt), size=.8) +"
+"0","  scale_shape_manual(values=c(32,16), name=element_blank()) + # values are for Reoffend character"
+"0","  geom_hline(yintercept=0, color='grey', linetype=2) +"
+"0","  theme_bw() +"
+"0","  scale_x_continuous(breaks=seq(x_min,x_max),"
+"0","                     limits=c(x_min-0.5, x_max+0.5),"
+"0","                     expand=c(0,0),"
+"0","                     labels=unique(dfr_plt$race))+"
+"0","  theme(panel.grid.major.x = element_line(colour=""white"", size=0.5),"
+"0","        panel.grid.major.y = element_blank(),"
+"0","        panel.grid.minor.y = element_blank(),"
+"0","        legend.position=""bottom"") +"
+"0","  xlab(""Race"") +"
+"0","  ylab(""Scaled Distance to Hyperplane"") +"
+"0","  scale_color_discrete(name="""")"
+"0","  scale_color_discrete(name = ""COMPAS score"")"
+"1","<ggproto object: Class ScaleDiscrete, Scale>
+    aesthetics: colour
+    axis_order: function
+    break_info: function
+    break_positions: function
+    breaks: waiver
+    call: call
+    clone: function
+    dimension: function
+    drop: TRUE
+    expand: waiver
+    get_breaks: function
+    get_breaks_minor: function
+    get_labels: function
+    get_limits: function
+    guide: legend
+    is_discrete: function
+    is_empty: function
+    labels: waiver
+    limits: NULL
+    make_sec_title: function
+    make_title: function
+    map: function
+    map_df: function
+    n.breaks.cache: NULL
+    na.translate: TRUE
+    na.value: grey50
+    name: COMPAS score
+    palette: function
+    palette.cache: NULL
+    position: left
+    range: <ggproto object: Class RangeDiscrete, Range>
+        range: NULL
+        reset: function
+        train: function
+        super:  <ggproto object: Class RangeDiscrete, Range>
+    reset: function
+    scale_name: hue
+    train: function
+    train_df: function
+    transform: function
+    transform_df: function
+    super:  <ggproto object: Class ScaleDiscrete, Scale>"
+"1","
+"
+"0","p"

@@ -1,0 +1,3 @@
+"0","res_decile8 %>%"
+"0","  filter(UB < 0) %>%"
+"0","  summarize(mean(two_year_recid))"

@@ -1,0 +1,7 @@
+"0","# Filtered as in Compas Analysis.ipynb"
+"0","# compas <- compas %>% "
+"0","#   filter(days_b_screening_arrest <= 30) %>%"
+"0","#   filter(days_b_screening_arrest >= -30) %>%"
+"0","#   filter(is_recid != -1) %>% # Doesn't remove any rows"
+"0","#   filter(c_charge_degree != ""O"") %>% # Doesn't remove any rows"
+"0","#   filter(score_text != 'N/A')"

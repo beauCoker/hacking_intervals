@@ -1,0 +1,5 @@
+"0","id0 <- c(3338, 4772)"
+"0","View(filter(db_casearrest, person_id %in% id0))"
+"0","View(filter(db_charge, person_id %in% id0))"
+"0","View(filter(db_jailhistory, person_id %in% id0))"
+"0","View(filter(db_prisonhistory, person_id %in% id0))"

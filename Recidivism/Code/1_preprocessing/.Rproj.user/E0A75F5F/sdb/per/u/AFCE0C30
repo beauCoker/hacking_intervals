@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "# Old\nfile0 = \"/Users/beaucoker/Documents/Duke_MSS/Range_of_Effects/MATLAB/Recidivism/v2/SVM/svm_input_bin_decile_score.mat\"\nmat0 =  readMat(file0)\n\n# New\nfile1 = \"/Users/beaucoker/Documents/Duke_MSS/Range_of_Effects/hacking_intervals/Recidivism/Data/3_setup_svm/svm_input_bin_decile_score.mat\"\nmat1 =  readMat(file1)\n\n\nall(mat1$V == mat0$V)\n\nngroup = max(length(mat0$u.group), length(mat1$u.group))\n\nsapply(1:ngroup, function(i) all(mat1$xnew[[i]][[1]]==mat0$xnew[[i]][[1]]))",
+    "created" : 1520442045084.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "2099784202",
+    "id" : "AFCE0C30",
+    "lastKnownWriteTime" : 4336970752,
+    "last_content_update" : 1520443788021,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

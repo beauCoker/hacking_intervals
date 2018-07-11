@@ -1,0 +1,8 @@
+"0","```r
+### Grow decision forests for different B
+set.seed(444)
+B <- c(0.4, 0.5, 0.6, 0.7, 0.8)*n
+M <- 1000
+K <- 2
+forest <- lapply(B, function(b) grow_forest(X, Y, b, K, M))
+```"

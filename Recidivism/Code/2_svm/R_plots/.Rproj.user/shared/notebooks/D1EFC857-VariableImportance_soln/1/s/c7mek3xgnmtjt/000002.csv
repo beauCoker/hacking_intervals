@@ -1,0 +1,4 @@
+"0","```r
+### Method 1: Use majority vote
+error_forest <- sapply(forest, function(f) mean((predict_forest(f, X_test) - Y_test)^2))
+```"

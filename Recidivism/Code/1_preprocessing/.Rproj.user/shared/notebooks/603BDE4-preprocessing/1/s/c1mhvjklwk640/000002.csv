@@ -1,0 +1,6 @@
+"0","# There are some redundant features that we can drop"
+"0","compas <- compas %>%"
+"0","  select(-compas_screening_date, -v_screening_date, "
+"0","         -priors_count_1, -decile_score_1,"
+"0","         -violent_recid, "
+"0","         -type_of_assessment, -v_type_of_assessment)"

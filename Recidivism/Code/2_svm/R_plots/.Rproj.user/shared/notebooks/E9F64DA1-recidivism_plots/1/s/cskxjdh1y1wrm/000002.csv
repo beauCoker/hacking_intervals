@@ -1,0 +1,16 @@
+"0","```r
+df3 = read_csv('/Users/beaucoker/Documents/Duke_MSS/Range_of_Effects/MATLAB/Recidivism/v2/SVM/svm_output_decile_score3.csv')
+```"
+"1","Parsed with column specification:
+cols(
+  id = col_integer(),
+  race = col_character(),
+  decile_score = col_integer(),
+  score_text = col_character(),
+  is_recid = col_integer(),
+  LB = col_double(),
+  UB = col_double(),
+  flag_min = col_integer(),
+  flag_max = col_integer()
+)
+"

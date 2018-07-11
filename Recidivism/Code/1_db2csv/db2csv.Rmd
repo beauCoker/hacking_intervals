@@ -1,0 +1,36 @@
+---
+title: "Extrat from database"
+output: html_notebook
+---
+
+Converts the database into csv files. This data is used only for reference, not for any statistical analysis.
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(readr)
+```
+
+```{r}
+folder_home <- "../../"
+folder_in <- paste0(folder_home,"Data/1_raw/")
+folder_out <- paste0(folder_home,"Data/2_from_db/")
+```
+
+```{r}
+# Connect to the database
+db <- src_sqlite(paste0(folder_in,"compas.db"), create = TRUE)
+
+# List all the tables
+table_names <- src_tbls(db)
+```
+
+```{r}
+# Save each table csv in the format "db_[table name].csv"
+for (i in 1:length(table_names)){
+  table = tbl(db,table_names[i])
+  
+  write_csv(as.tbl(as.data.frame(table)),
+            paste0(folder_out,"db_",table_names[i],".csv"))
+}
+```
+

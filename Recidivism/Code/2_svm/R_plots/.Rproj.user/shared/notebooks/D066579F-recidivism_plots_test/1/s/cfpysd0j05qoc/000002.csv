@@ -1,0 +1,12 @@
+"0","```r
+# Some data processing for the plot
+ds = .1
+df_plt <- df %>%
+  mutate(mid=(lb+ub)/2) %>%
+  arrange(score, mid) %>%
+  group_by(score) %>%
+  mutate(rank = 1:n()) %>%
+  mutate(score2 = score + ds*1:n() - ds*(n()+1)/2) %>%
+  mutate(reoffend = as.factor(reoffend)) %>%
+  mutate(reoffend_plt =  ifelse(reoffend==1,\"Reoffend\",\"\"))
+```"

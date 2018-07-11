@@ -1,0 +1,12 @@
+"0","```r
+df = read_csv('test_dataset.csv')
+```"
+"1","Parsed with column specification:
+cols(
+  score = col_integer(),
+  lb = col_double(),
+  ub = col_double(),
+  race = col_character(),
+  reoffend = col_integer()
+)
+"

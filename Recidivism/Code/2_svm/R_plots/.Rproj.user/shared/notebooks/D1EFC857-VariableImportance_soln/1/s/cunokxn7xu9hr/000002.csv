@@ -1,0 +1,4 @@
+"0","```r
+# Grow a decision stump
+stump <- grow_stump(X, Y)
+```"

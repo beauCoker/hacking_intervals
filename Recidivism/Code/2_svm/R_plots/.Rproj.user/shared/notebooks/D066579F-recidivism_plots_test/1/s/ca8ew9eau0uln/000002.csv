@@ -1,0 +1,19 @@
+"0","```r
+score_min = min(df$score)
+score_max = max(df$score)
+ggplot(df_plt, aes(x=score2)) +
+  geom_errorbar(aes(ymin=lb, ymax=ub, color=race),
+                width=.05) +
+  geom_point(aes(y=ub+.1, shape=reoffend_plt), size=2) +
+  scale_shape_manual(values=c(32,82), name=element_blank()) + # values are for Reoffend character
+  geom_hline(yintercept=0, color='grey', linetype=2) +
+  theme_bw() +
+  scale_x_continuous(breaks=seq(score_min,score_max),limits=c(score_min-0.5, score_max+0.5))+
+  theme(panel.grid.major.x = element_line(colour=\"white\", size=0.5),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()) +
+  xlab(\"COMPAS Score\") +
+  ylab(\"SVM Distance\") +
+  scale_color_discrete(name=\"Race\") +
+  ggtitle(\"SVM Hacking Intervals\")
+```"

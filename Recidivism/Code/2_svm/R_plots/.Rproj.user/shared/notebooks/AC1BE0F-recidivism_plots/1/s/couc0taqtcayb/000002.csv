@@ -1,0 +1,95 @@
+"0","### Load data"
+"0","propublica = read_csv(paste0(folder_home,""Data/1_raw/compas-scores-two-years.csv""))"
+"2","Duplicated column names deduplicated: 'decile_score' => 'decile_score_1' [40], 'priors_count' => 'priors_count_1' [49]"
+"2","Parsed with column specification:
+cols(
+  .default = col_character(),
+  id = col_integer(),
+  compas_screening_date = col_date(format = """"),
+  dob = col_date(format = """"),
+  age = col_integer(),
+  juv_fel_count = col_integer(),
+  decile_score = col_integer(),
+  juv_misd_count = col_integer(),
+  juv_other_count = col_integer(),
+  priors_count = col_integer(),
+  days_b_screening_arrest = col_integer(),
+  c_jail_in = col_datetime(format = """"),
+  c_jail_out = col_datetime(format = """"),
+  c_offense_date = col_date(format = """"),
+  c_arrest_date = col_date(format = """"),
+  c_days_from_compas = col_integer(),
+  is_recid = col_integer(),
+  r_days_from_arrest = col_integer(),
+  r_offense_date = col_date(format = """"),
+  r_jail_in = col_date(format = """"),
+  r_jail_out = col_date(format = """")
+  # ... with 13 more columns
+)
+"
+"2","See spec(...) for full column specifications.
+"
+"0","res_decile = read_csv(paste0(folder_in,'svm_output_bin_decile_score.csv'))"
+"2","Parsed with column specification:
+cols(
+  id = col_integer(),
+  race = col_character(),
+  decile_score = col_integer(),
+  score_text = col_character(),
+  two_year_recid = col_integer(),
+  LB = col_double(),
+  UB = col_double(),
+  LB_geo = col_double(),
+  UB_geo = col_double(),
+  flag_min = col_integer(),
+  flag_max = col_integer()
+)
+"
+"0","res_decile3 = read_csv(paste0(folder_in,'svm_output_bin_decile_score3.csv'))"
+"2","Parsed with column specification:
+cols(
+  id = col_integer(),
+  race = col_character(),
+  decile_score = col_integer(),
+  score_text = col_character(),
+  two_year_recid = col_integer(),
+  LB = col_double(),
+  UB = col_double(),
+  LB_geo = col_double(),
+  UB_geo = col_double(),
+  flag_min = col_integer(),
+  flag_max = col_integer()
+)
+"
+"0","res_decile8 = read_csv(paste0(folder_in,'svm_output_bin_decile_score8.csv'))"
+"2","Parsed with column specification:
+cols(
+  id = col_integer(),
+  race = col_character(),
+  decile_score = col_integer(),
+  score_text = col_character(),
+  two_year_recid = col_integer(),
+  LB = col_double(),
+  UB = col_double(),
+  LB_geo = col_double(),
+  UB_geo = col_double(),
+  flag_min = col_integer(),
+  flag_max = col_integer()
+)
+"
+"0","res_race = read_csv(paste0(folder_in,'svm_output_bin_race.csv'))"
+"2","Parsed with column specification:
+cols(
+  id = col_integer(),
+  race = col_character(),
+  decile_score = col_integer(),
+  score_text = col_character(),
+  two_year_recid = col_integer(),
+  LB = col_double(),
+  UB = col_double(),
+  LB_geo = col_double(),
+  UB_geo = col_double(),
+  flag_min = col_integer(),
+  flag_max = col_integer()
+)
+"

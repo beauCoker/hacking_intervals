@@ -1,0 +1,9 @@
+"0","```r
+out <- matrix(NA,length(B),5)
+colnames(out) <- colnames(X)
+rownames(out) <- B
+for (i in seq_along(B)){
+  out[i,] <- apply(forest[[i]]$imp_OOB,2, function(x) sd(x, na.rm=TRUE))
+}
+kable(round(out,3), caption=\"imp_OOB standard deviation\")
+```"

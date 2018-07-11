@@ -1,0 +1,3 @@
+"0","above0_score3 = filter(propublica, id %in% res_decile3$id[res_decile3$LB>0]) %>%"
+"0","  summarize(n_people = n(), mean_prior=mean(priors_count), tot_recid=sum(two_year_recid))"
+"0","above0_score3"

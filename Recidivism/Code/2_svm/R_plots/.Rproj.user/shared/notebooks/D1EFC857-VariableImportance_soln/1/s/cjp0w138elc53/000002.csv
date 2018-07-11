@@ -1,0 +1,6 @@
+"0","```r
+out <- rbind(error_forest, error_trees)
+rownames(out) <- c(\"Error of forest (majority vote)\",\"Average error of trees\")
+colnames(out) <- K
+kable(round(out,3))
+```"

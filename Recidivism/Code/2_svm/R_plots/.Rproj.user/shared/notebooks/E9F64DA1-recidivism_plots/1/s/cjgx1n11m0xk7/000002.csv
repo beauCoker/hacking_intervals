@@ -1,0 +1,26 @@
+"0","```r
+ggplot(df8_plt, aes(x=score_jitter)) +
+  geom_errorbar(aes(ymin=LB, ymax=UB, color=race),
+                width=.05) + 
+  geom_point(aes(y=UB+.1, shape=is_recid_plt), size=.8) +
+  scale_shape_manual(values=c(32,16), name=element_blank()) + # values are for Reoffend character
+  geom_hline(yintercept=0, color='grey', linetype=2) +
+  theme_bw() +
+  scale_x_continuous(expand=c(0,0)
+   #                  breaks=seq(score_min,score_max),
+  #                   limits=c(score_min-0.5, score_max+0.5),
+  )+
+  theme(strip.background = element_blank(),
+        strip.text = element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position=\"bottom\") +
+  ylab(\"Distance to Hyperplane\") +
+  scale_color_discrete(name=\"\") +
+  ggtitle(\"SVM hacking intervals for all individuals with COMPAS score 8\")
+```"

@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Data processing\"\noutput: html_notebook\n---\n\nIn this notebook, the data as provided by ProPublica is formatted for use in the SVM and sensitivity analysis examples. Binary features are coded.\n\n```{r, message=FALSE, warning=FALSE}\nlibrary(dplyr)\nlibrary(ggplot2)\nlibrary(lubridate)\nlibrary(readr)\n```\n\n```{r}\nfolder_home <- \"../../\"\nfolder_in <- paste0(folder_home,\"Data/1_raw/\")\nfolder_out <- paste0(folder_home,\"Data/2_preprocessed/\")\n\ncompas <- read_csv(paste0(folder_in,\"compas-scores-two-years.csv\"))\nnrow(compas)\n```\n\n```{r}\n# There are some redundant features that we can drop\ncompas <- compas %>%\n  select(-compas_screening_date, -v_screening_date, \n         -priors_count_1, -decile_score_1,\n         -violent_recid, \n         -type_of_assessment, -v_type_of_assessment)\n```\n\n```{r}\n# Filtering that we attribute to data quality\ncompas <- compas %>%\n  filter(!(is.na(c_days_from_compas))) %>%\n  filter(c_days_from_compas <= 30) %>%\n  filter(c_charge_degree %in% c(\"F\",\"M\"))\n```\n\n\n```{r}\n# Format features\ncompas <- compas %>%\n  mutate(age_screening =  floor(as.numeric(as.period(interval(dob,screening_date)), \"years\"))) %>%\n  mutate(sex_Male = ifelse(sex==\"Male\",1,0)) %>%\n  mutate(c_charge_degree_F = if_else(c_charge_degree==\"F\",1,0)) %>%\n  mutate(age_18_20 = ifelse(age_screening>=18 & age_screening<=20,1,0)) %>%\n  mutate(age_21_22 = ifelse(age_screening>=21 & age_screening<=22,1,0)) %>%\n  mutate(age_23_25 = ifelse(age_screening>=23 & age_screening<=25,1,0)) %>%\n  mutate(age_26_45 = ifelse(age_screening>=26 & age_screening<=45,1,0)) %>%\n  mutate(age__45 = ifelse(age_screening>45,1,0)) %>%\n  mutate(juvenile_felonies__0 = ifelse(juv_fel_count>0,1,0)) %>%\n  mutate(juvenile_misdemeanors__0 = ifelse(juv_misd_count>0,1,0)) %>%\n  mutate(juvenile_crimes__0 = ifelse(juv_other_count>0 | juv_fel_count>0 | juv_misd_count>0,1,0)) %>%\n  mutate(priors_2_3 = ifelse(priors_count==2 | priors_count==3,1,0)) %>%\n  mutate(priors__0 = ifelse(priors_count==0,1,0)) %>%\n  mutate(priors__1 = ifelse(priors_count==1,1,0)) %>%\n  mutate(priors__3 = ifelse(priors_count>3,1,0))\n```\n\n\nNow apply Compas row filters as as in `Compas Analysis.ipynb`.\n\n```{r}\n# Filtered as in Compas Analysis.ipynb\n# compas <- compas %>% \n#   filter(days_b_screening_arrest <= 30) %>%\n#   filter(days_b_screening_arrest >= -30) %>%\n#   filter(is_recid != -1) %>% # Doesn't remove any rows\n#   filter(c_charge_degree != \"O\") %>% # Doesn't remove any rows\n#   filter(score_text != 'N/A')\n```\n\nSave\n\n```{r}\nwrite_csv(compas, paste0(folder_out,\"compas_matlab_bin.csv\"))\n```\n\n",
+    "created" : 1517168321030.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "642661430",
+    "id" : "937EDFE0",
+    "lastKnownWriteTime" : 1520374160,
+    "last_content_update" : 1520374160832,
+    "path" : "~/Documents/Duke_MSS/Range_of_Effects/hacking_intervals/Recidivism/Code/1_preprocessing/preprocessing.Rmd",
+    "project_path" : "preprocessing.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,5 @@
+"0","sum(res_decile3$LB<0 & res_decile3$UB > 0 )/nrow(res_decile3)"
+"1","[1]"
+"1"," 0.7496229"
+"1","
+"

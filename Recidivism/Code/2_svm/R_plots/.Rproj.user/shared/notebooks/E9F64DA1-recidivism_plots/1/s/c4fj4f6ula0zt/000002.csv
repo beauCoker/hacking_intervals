@@ -1,0 +1,4 @@
+"0","```r
+df8 %>%
+  summarize(mean(is_recid))
+```"
