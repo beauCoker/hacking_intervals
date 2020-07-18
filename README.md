@@ -7,7 +7,7 @@ There is also [R package](https://github.com/beauCoker/hacking) that accompanies
 
 ### Recidivism analysis
 
-We use the dataset made available by [ProPublica](https://github.com/propublica/compas-analysis). To reproduce our results, use `Recidivism/Code/1_db2csv/db2csv.Rmd` to transform the raw data into .csv files and use `Recidivism/Code/1_preprocessing/preprocessing.Rmd` to proprocess the .csv files for analysis. The code for the new feature analysis is stored in `Recidivism/Code/2_newfeature/Scripts` and the code for the SVM analysis is stored in `Recidivism/Code/2_svm/Scripts`.
+We use the dataset made available by [ProPublica](https://github.com/propublica/compas-analysis). In particular, we use the files `compas-scores-two-years.csv` and `compas.db`. To reproduce our results, use `Recidivism/Code/1_db2csv/db2csv.Rmd` to transform the raw ProPublica data into .csv files and use `Recidivism/Code/1_preprocessing/preprocessing.Rmd` to proprocess the .csv files for analysis. The code for the new feature analysis is stored in `Recidivism/Code/2_newfeature/Scripts` and the code for the SVM analysis is stored in `Recidivism/Code/2_svm/Scripts`.
 
 Both analyses use the following features:
 * `c_charge_degree_F`: Binary indicator if the most recent charge prior to the COMPAS score calculation is a felony.
