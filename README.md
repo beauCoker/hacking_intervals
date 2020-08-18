@@ -58,15 +58,15 @@ First run these scripts:
 Then create the plots using:
 `Recidivism/Code/2_svm/R_plots/recidivism_plots.Rmd`
 
-#### Figure EC.1: Prescriptively-constrained hacking for matching
+##### Figure EC.1: Prescriptively-constrained hacking for matching
 
 Reproduced from Figure 3 in [Morucci et al. 2018](https://arxiv.org/pdf/1812.02227.pdf)
 
-#### Figure EC.2: Tethered hacking for kernel regression
+##### Figure EC.2: Tethered hacking for kernel regression
 
 Run `Kernel_regression/Metric Learning for Kernel Regression.ipynb`
 
-#### Figure EC.3: Tethered hacking for PCA variable selection
+##### Figure EC.3: Tethered hacking for PCA variable selection
 
 Run these scripts:
 * `PCA/variable_selection.m`
