@@ -26,19 +26,19 @@ Here's a guide to reproducing the figures in the paper.
 
 ##### Figure 1: Tethered hacking for $k$-NN prediction (illustration)
 
-Created manually, no code available
+Created manually, no code available.
 
 ##### Figure 2: Tethered hacking for SVM prediction (illustration)
 
-Run `Recidivism/Code/2_svm/Scripts/example.m`
+Run `Recidivism/Code/2_svm/Scripts/example.m`.
 
 ##### Figure 3: Tethered hacking for average treatment effect 
 
-Run `Linear_regression/fig1_ATE.m`
+Run `Linear_regression/fig1_ATE.m`. This script also produces the results for Table 1 (see variables `beta0min` and `beta0max`). 
 
 ##### Figure 4: Tethered hacking for individual treatment effect 
 
-Run `Linear_regression/fig2_IndividualTE.m`
+Run `Linear_regression/fig2_IndividualTE.m`.
 
 ##### Figure 5: Presciptively-constrained hacking for odds ratio
 
@@ -56,15 +56,15 @@ First run these scripts:
 * `Recidivism/Code/2_svm/Scripts/main_score8.m`
 
 Then create the plots using:
-`Recidivism/Code/2_svm/R_plots/recidivism_plots.Rmd`
+`Recidivism/Code/2_svm/R_plots/recidivism_plots.Rmd`.
 
 ##### Figure EC.1: Prescriptively-constrained hacking for matching
 
-Reproduced from Figure 3 in [Morucci et al. 2018](https://arxiv.org/pdf/1812.02227.pdf)
+Reproduced from Figure 3 in [Morucci et al. 2018](https://arxiv.org/pdf/1812.02227.pdf).
 
 ##### Figure EC.2: Tethered hacking for kernel regression
 
-Run `Kernel_regression/Metric Learning for Kernel Regression.ipynb`
+Run `Kernel_regression/Metric Learning for Kernel Regression.ipynb`.
 
 ##### Figure EC.3: Tethered hacking for PCA variable selection
 
